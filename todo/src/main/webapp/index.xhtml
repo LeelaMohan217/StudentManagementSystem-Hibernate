@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Student Management System</title>
+	<style>
+.dialogButtons {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	margin-top: 30px;
+}
+
+.dialogButtons .dialogButton {
+	background-color: midnightblue !important;
+	color: white !important;
+	width: 100px;
+	border: none;
+	margin-left: 10px;
+	border: none;
+	margin-right: 10px;
+}
+
+.hButton {
+	background-color: midnightblue !important;
+	color: white !important;
+	border: none;
+	margin-left: 10px;
+	border: none;
+	margin-right: 10px;
+}
+
+.dTButton {
+	background-color: midnightblue !important;
+	color: white !important;
+	border: none;
+	margin-left: 10px;
+	border: none;
+	margin-right: 10px;
+}
+</style>
+</h:head>
+
+<h:body>
+	<center>
+		<h1>
+			<p:outputLabel value="Student Management System" />
+		</h1>
+	</center>
+	<hr />
+
+	<h:form id="mainPageForm">
+		<p:panelGrid layout="grid" id="std_search" columns="1"
+			style="width:100%;">
+			<p:panelGrid>
+				<p:row>
+					<p:column>
+						<h2>
+							<p:outputLabel id="lbl_sdnt_search" value="Student Id"
+								for="searchId" />
+						</h2>
+					</p:column>
+					<p:column>
+						<p:inputText id="searchId" value="#{studentManagedBean.id}"
+							required="true" requiredMessage="Enter Student ID" />
+					</p:column>
+
+					<p:column>
+						<p:commandButton id="searchButton" value="Search"
+							action="#{studentManagedBean.search(studentManagedBean.id)}"
+							update="studentTable" styleClass="hButton" />
+					</p:column>
+
+					<p:column>
+						<p:commandButton id="resetButton" value="Reset"
+							action="#{studentManagedBean.resetSearch}" update="studentTable"
+							styleClass="hButton" />
+					</p:column>
+
+					<p:column>
+						<p:commandButton value="Add Student"
+							oncomplete="PF('formDialogStudent').show()" styleClass="hButton" />
+					</p:column>
+				</p:row>
+			</p:panelGrid>
+		</p:panelGrid>
+
+		<h1>
+			<p:outputLabel value="Student Details"></p:outputLabel>
+		</h1>
+
+		<p:dataTable id="studentTable" value="#{studentManagedBean.students}"
+			var="stud" showGridlines="true" emptyMessage="No students found"
+			lazy="true">
+
+			<p:column headerText="ID">
+				<h:outputText value="#{stud.id}"></h:outputText>
+			</p:column>
+			<p:column headerText="Student Name">
+				<h:outputText value="#{stud.name}"></h:outputText>
+			</p:column>
+			<p:column headerText="Branch">
+				<h:outputText value="#{stud.branch}"></h:outputText>
+			</p:column>
+			<p:column headerText="DateOfBitrh">
+				<h:outputText value="#{stud.dob}"></h:outputText>
+			</p:column>
+			<p:column headerText="Age">
+				<h:outputText value="#{stud.age}"></h:outputText>
+			</p:column>
+			<p:column headerText="Gender">
+				<h:outputText value="#{stud.gender}"></h:outputText>
+			</p:column>
+			<p:column headerText="E-mail">
+				<h:outputText value="#{stud.email}"></h:outputText>
+			</p:column>
+			<p:column headerText="Mobile">
+				<h:outputText value="#{stud.mobile}"></h:outputText>
+			</p:column>
+			<p:column headerText="Country">
+				<h:outputText value="#{stud.country}"></h:outputText>
+			</p:column>
+			<p:column headerText="State">
+				<h:outputText value="#{stud.state}"></h:outputText>
+			</p:column>
+			<p:column headerText="City">
+				<h:outputText value="#{stud.city}"></h:outputText>
+			</p:column>
+			<p:column headerText="Pincode">
+				<h:outputText value="#{stud.pincode}"></h:outputText>
+			</p:column>
+
+			<p:column headerText="Edit">
+				<p:commandButton value="Edit"
+					action="#{studentManagedBean.editStudent(stud)}"
+					update="studentUpdateForm" process="@this"
+					oncomplete="PF('updateFormDialogStudent').show()"
+					styleClass="dTButton" />
+			</p:column>
+
+			<p:column headerText="Delete">
+				<p:commandButton value="Delete"
+					action="#{studentManagedBean.deleteStudent(stud.id)}"
+					update="studentTable" process="@this" styleClass="dTButton" />
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<h:form id="studentForm">
+		<p:growl id="growl_msg" sticky="true" />
+
+		<p:dialog id="frm_dialog" widgetVar="formDialogStudent"
+			header="Student Form" showEffect="fade" hideEffect="fade"
+			closeOnEscape="true" styleClass="dialogContainer" minHeight="40"
+			height="500px" width="700" resizable="true" responsive="true">
+
+			<p:panelGrid id="dialog_panel_grid" layout="grid" columns="2"
+				style="width: 100%;">
+
+				<p:outputLabel for="studentName" styleClass="block">Student Name</p:outputLabel>
+				<p:inputText id="studentName"
+					value="#{studentManagedBean.student.name}" required="true"
+					requiredMessage="Name is a required field" styleClass="block">
+					<f:validateLength minimum="3" maximum="20" />
+				</p:inputText>
+
+				<p:outputLabel for="branch" styleClass="block">Branch</p:outputLabel>
+				<p:selectOneMenu id="branch"
+					value="#{studentManagedBean.student.branch}" style="width:150px"
+					required="true">
+					<f:selectItem itemLabel="Select Branch" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{studentManagedBean.allBranches}"
+						var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="dob" styleClass="block">Date Of Birth</p:outputLabel>
+				<p:datePicker id="dob" value="#{studentManagedBean.student.dob}"
+					monthNavigator="true" yearNavigator="true" showWeek="true"
+					pattern="MM/dd/yyyy" required="true">
+					<f:convertDateTime pattern="MM/dd/yyyy" />
+					<p:ajax event="dateSelect" update="studentAge"
+						listener="#{studentManagedBean.ageCalculator}" />
+				</p:datePicker>
+
+				<p:outputLabel for="studentAge" styleClass="block">Age</p:outputLabel>
+				<p:inputText id="studentAge" styleClass="block"
+					value="#{studentManagedBean.student.age}" required="true"
+					readonly="true" />
+
+				<p:outputLabel for="gender" styleClass="block">Gender</p:outputLabel>
+				<p:selectOneRadio id="gender"
+					value="#{studentManagedBean.student.gender}" layout="lineDirection"
+					required="true">
+					<f:selectItem itemLabel="Male" itemValue="Male" />
+					<f:selectItem itemLabel="Female" itemValue="Female" />
+				</p:selectOneRadio>
+
+				<p:outputLabel for="email" styleClass="block">Email Id</p:outputLabel>
+				<p:inputText id="email" styleClass="block"
+					value="#{studentManagedBean.student.email}" required="true">
+					<f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$" />
+					<p:ajax update="growl_msg" />
+				</p:inputText>
+
+				<p:outputLabel for="mobile" styleClass="block">Mobile</p:outputLabel>
+				<p:inputText id="mobile"
+					value="#{studentManagedBean.student.mobile}" required="true"
+					requiredMessage="Mobile number is required"
+					validator="#{studentManagedBean.validateMobileNumber}">
+					<p:ajax event="blur" update="messages" />
+				</p:inputText>
+
+				<p:outputLabel for="country" value="Country" />
+				<p:selectOneMenu id="country"
+					value="#{studentManagedBean.selectedCountry}" required="true"
+					style="width:150px">
+					<f:selectItem itemLabel="Select Country" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{studentManagedBean.allCountries}" />
+					<p:ajax update="state city"
+						listener="#{studentManagedBean.onCountryChange}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="state" value="State" />
+				<p:selectOneMenu id="state"
+					value="#{studentManagedBean.selectedState}" required="true"
+					style="width:150px">
+					<f:selectItem itemLabel="Select State" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{studentManagedBean.states}" />
+					<p:ajax update="city"
+						listener="#{studentManagedBean.onStateChange}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="city" value="City" />
+				<p:selectOneMenu id="city"
+					value="#{studentManagedBean.selectedCity}" required="true"
+					style="width:150px">
+					<f:selectItem itemLabel="Select City" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{studentManagedBean.cities}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="pincode" styleClass="block">Pincode</p:outputLabel>
+				<p:inputText id="pincode" styleClass="block"
+					value="#{studentManagedBean.student.pincode}" required="true">
+					<f:validateLength minimum="6" maximum="6" />
+				</p:inputText>
+				<p:message for="mobile" id="messages" />
+			</p:panelGrid>
+
+			<div class="dialogButtons">
+				<p:commandButton id="submit_btn" value="Submit"
+					styleClass="dialogButton"
+					action="#{studentManagedBean.saveStudent}"
+					update=":mainPageForm:studentTable,dialog_panel_grid"
+					process="@form" oncomplete="PF('formDialogStudent').hide()" />
+
+				<p:commandButton id="cancel_btn" value="Cancel" type="button"
+					icon="pi pi-times" styleClass="dialogButton"
+					onclick="PF('formDialogStudent').hide()" />
+			</div>
+		</p:dialog>
+	</h:form>
+
+	<h:form id="studentUpdateForm">
+		<p:growl id="growl_msg" sticky="true" />
+
+		<p:dialog id="frm_update_dialog" widgetVar="updateFormDialogStudent"
+			header="Student Form" showEffect="fade" hideEffect="fade"
+			closeOnEscape="true" styleClass="dialogContainer" minHeight="40"
+			height="500px" width="700" resizable="true" responsive="true">
+
+			<p:panelGrid id="update_dialog_panel_grid" layout="grid" columns="2"
+				style="width: 100%;">
+
+				<p:outputLabel for="studentName" styleClass="block">Student Name</p:outputLabel>
+				<p:inputText id="studentName" styleClass="block"
+					value="#{studentManagedBean.selectedStudent.name}" required="true"
+					requiredMessage="Name is a required field" />
+
+				<p:outputLabel for="branch" styleClass="block">Branch</p:outputLabel>
+				<p:selectOneMenu id="branch"
+					value="#{studentManagedBean.selectedStudent.branch}"
+					style="width:150px" required="true">
+					<f:selectItem itemLabel="Select Branch" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{studentManagedBean.allBranches}"
+						var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="dob" styleClass="block">Date Of Birth</p:outputLabel>
+				<p:datePicker id="dob"
+					value="#{studentManagedBean.selectedStudent.dob}"
+					monthNavigator="true" yearNavigator="true" showWeek="true"
+					pattern="MM/dd/yyyy" required="true">
+					<f:convertDateTime pattern="MM/dd/yyyy" />
+					<p:ajax event="dateSelect" update="studentAge"
+						listener="#{studentManagedBean.ageEdit}" />
+				</p:datePicker>
+
+				<p:outputLabel for="studentAge" styleClass="block">Age</p:outputLabel>
+				<p:inputText id="studentAge" styleClass="block"
+					value="#{studentManagedBean.selectedStudent.age}" required="true"
+					readonly="true" />
+
+				<p:outputLabel for="gender" styleClass="block">Gender</p:outputLabel>
+				<p:selectOneRadio id="gender"
+					value="#{studentManagedBean.selectedStudent.gender}"
+					layout="lineDirection" required="true">
+					<f:selectItem itemLabel="Male" itemValue="Male" />
+					<f:selectItem itemLabel="Female" itemValue="Female" />
+				</p:selectOneRadio>
+
+				<p:outputLabel for="email" styleClass="block">Email Id</p:outputLabel>
+				<p:inputText id="email" styleClass="block"
+					value="#{studentManagedBean.selectedStudent.email}" required="true">
+					<f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$" />
+					<p:ajax update="growl_msg"></p:ajax>
+				</p:inputText>
+
+				<p:outputLabel for="mobile" styleClass="block">Mobile</p:outputLabel>
+				<p:inputText id="mobile"
+					value="#{studentManagedBean.selectedStudent.mobile}"
+					required="true" requiredMessage="Mobile number is required"
+					validator="#{studentManagedBean.validateMobileNumber}">
+					<p:ajax event="blur" update="messages" />
+				</p:inputText>
+
+				<p:outputLabel for="country" value="Country" />
+				<p:selectOneMenu id="country"
+					value="#{studentManagedBean.selectedCountry}" required="true"
+					style="width:150px">
+					<f:selectItem itemLabel="Select Country" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{studentManagedBean.allCountries}" />
+					<p:ajax update="state city"
+						listener="#{studentManagedBean.onCountryChange}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="state" value="State" />
+				<p:selectOneMenu id="state"
+					value="#{studentManagedBean.selectedState}" required="true"
+					style="width:150px">
+					<f:selectItem itemLabel="Select State" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{studentManagedBean.states}" />
+					<p:ajax update="city"
+						listener="#{studentManagedBean.onStateChange}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="city" value="City" />
+				<p:selectOneMenu id="city"
+					value="#{studentManagedBean.selectedCity}" required="true"
+					style="width:150px">
+					<f:selectItem itemLabel="Select City" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{studentManagedBean.cities}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="pincode" styleClass="block">Pincode</p:outputLabel>
+				<p:inputText id="pincode" styleClass="block"
+					value="#{studentManagedBean.selectedStudent.pincode}"
+					required="true" />
+				<p:message for="mobile" id="messages" />
+
+			</p:panelGrid>
+
+			<div class="dialogButtons">
+				<p:commandButton id="submit_btn" value="Submit"
+					styleClass="dialogButton"
+					action="#{studentManagedBean.updateStudent}"
+					update=":mainPageForm:studentTable,update_dialog_panel_grid"
+					process="@form" oncomplete="PF('updateFormDialogStudent').hide()" />
+
+				<p:commandButton id="cancel_btn" value="Cancel" type="button"
+					icon="pi pi-times" styleClass="dialogButton"
+					onclick="PF('updateFormDialogStudent').hide()" />
+			</div>
+		</p:dialog>
+	</h:form>
+
+
+</h:body>
+</html>

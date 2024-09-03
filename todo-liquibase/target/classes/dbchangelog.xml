@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+	<changeSet id="1" author="bob">
+		<createTable tableName="department">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="active" type="boolean"
+				defaultValueBoolean="true" />
+		</createTable>
+	</changeSet>
+
+	<changeSet author="venkat" id="2">
+		<createTable tableName="user">
+			<column name="user_id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="username" type="varchar(20)">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by" type="varchar(20)">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_date" type="date">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="3" author="mohan">
+		<createTable tableName="student">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(100)">
+				<constraints nullable="false" />
+			</column>
+			<column name="college" type="varchar(100)">
+				<constraints nullable="false" />
+			</column>
+			<column name="branch" type="varchar(100)">
+				<constraints nullable="false" />
+			</column>
+			<column name="dob" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="age" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="gender" type="varchar(20)">
+				<constraints nullable="false" />
+			</column>
+			<column name="email" type="varchar(200)">
+				<constraints nullable="false" />
+			</column>
+			<column name="mobile" type="varchar(20)">
+				<constraints nullable="false" />
+			</column>
+			<column name="country_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="state_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="city_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="pincode" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="4" author="mohan">
+		<createTable tableName="country">
+			<column name="country_id" type="BIGINT">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="country_code" type="VARCHAR(20)">
+				<constraints nullable="false" />
+			</column>
+			<column name="country_name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<!-- Create the state table -->
+	<changeSet id="5" author="mohan">
+		<createTable tableName="state">
+			<column name="state_id" type="BIGINT">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="state_name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="country_id" type="BIGINT">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<!-- Add foreign key with on delete cascade -->
+		<addForeignKeyConstraint baseTableName="state"
+			baseColumnNames="country_id" constraintName="fk_state_country"
+			referencedTableName="country" referencedColumnNames="country_id"
+			onDelete="CASCADE" />
+	</changeSet>
+
+	<!-- Create the city table -->
+	<changeSet id="6" author="mohan">
+		<createTable tableName="city">
+			<column name="city_id" type="BIGINT">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="city_name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="state_id" type="BIGINT">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<!-- Add foreign key with on delete cascade -->
+		<addForeignKeyConstraint baseTableName="city"
+			baseColumnNames="state_id" constraintName="fk_city_state"
+			referencedTableName="state" referencedColumnNames="state_id"
+			onDelete="CASCADE" />
+	</changeSet>
+
+	<changeSet id="7" author="mohan">
+		<createTable tableName="studentFormCheck">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="name" type="varchar(100)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+</databaseChangeLog>

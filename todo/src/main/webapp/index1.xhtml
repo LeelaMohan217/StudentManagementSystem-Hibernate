@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Student Management System</title>
+	<style>
+.sButton {
+	background-color: #007bff !important;
+	color: white !important;
+	font-weight: bold;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	margin: 5px;
+}
+
+.sButton:hover {
+	background-color: #0056b3 !important;
+}
+
+.rButton {
+	background-color: #6c757d !important;
+	color: white !important;
+	font-weight: bold;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	margin: 5px;
+}
+
+.rButton:hover {
+	background-color: #5a6268 !important;
+}
+
+.aButton {
+	background-color: #28a745 !important;
+	color: white !important;
+	font-weight: bold;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	margin: 5px;
+}
+
+.aButton:hover {
+	background-color: #218838 !important;
+}
+
+.heading2 {
+	font-weight: bold;
+	font-size: 32px;
+}
+
+.dialogButtons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.submitButton {
+	background-color: #4CAF50 !important;
+	color: white;
+	border: none;
+	font-size: 20px;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.cancelButton {
+	background-color: #f44336 !important;
+	color: white;
+	border: none;
+	font-size: 20px;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.submitButton:hover {
+	background-color: #45a049 !important;
+}
+
+.cancelButton:hover {
+	background-color: #d32f2f !important;
+}
+
+.editButton {
+	background-color: #355E3B !important;
+	color: white;
+	border: none;
+	font-size: 20px;
+	font-weight: bold;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.editButton:hover {
+	background-color: #2E4E32 !important;
+	color: #e0e0e0;
+}
+
+.deleteButton {
+	background-color: #D2042D !important;
+	color: white;
+	border: none;
+	font-weight: bold;
+	font-size: 20px;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.deleteButton:hover {
+	background-color: #B00225 !important;
+	color: #f5f5f5;
+}
+</style>
+</h:head>
+
+<h:body>
+	<center>
+		<h1>
+			<p:outputLabel value="Student Management System - Hibernate" />
+		</h1>
+	</center>
+	<hr />
+	<h:form>
+		<p:menubar>
+			<p:menuitem value="Home" outcome="index1" />
+			<p:menuitem value="Country" outcome="country.xhtml" />
+			<p:menuitem value="State" outcome="state" />
+			<p:menuitem value="City" outcome="city" />
+		</p:menubar>
+	</h:form>
+
+	<!-- Growl Message -->
+	<h:form id="growlForm">
+		<p:growl id="messages" showDetail="true" life="3000" />
+	</h:form>
+
+	<h:form id="std_srch_btn_frm">
+		<p:panelGrid layout="grid" id="std_search" columns="1"
+			style="width:100%;">
+			<p:panelGrid>
+				<p:row>
+					<p:column>
+						<h2>
+							<p:outputLabel id="lbl_sdnt_search" value="Student Id"
+								for="searchId" />
+						</h2>
+					</p:column>
+					<p:column>
+						<p:inputText id="searchId" value="#{student2Bean.searchTerm}"
+							required="true" requiredMessage="Enter Student Name"
+							placeholder="Enter Student Name" />
+					</p:column>
+
+					<p:column>
+						<p:commandButton id="searchButton" value="Search"
+							action="#{student2Bean.searchStudentByName}"
+							update=":dataTableForm" styleClass="sButton" />
+					</p:column>
+
+					<p:column>
+						<p:commandButton id="resetButton" value="Reset"
+							action="#{student2Bean.resetSearch}" update=":dataTableForm"
+							styleClass="rButton" />
+					</p:column>
+
+
+					<p:column>
+						<p:commandButton value="Add Student"
+							oncomplete="PF('formDialogStudent').show()" styleClass="aButton" />
+					</p:column>
+				</p:row>
+			</p:panelGrid>
+		</p:panelGrid>
+	</h:form>
+	<h:form>
+		<p:commandButton id="refreshButton" value="Refresh"
+			styleClass="reButton" action="#{student2Bean.refreshStudents}"
+			update=":dataTableForm, :growlForm:messages" />
+	</h:form>
+
+	<p:outputLabel>Student Details</p:outputLabel>
+
+	<h:form id="dataTableForm">
+
+		<p:dataTable id="studentTable" value="#{student2Bean.students}"
+			var="stud" showGridlines="true" emptyMessage="No students found"
+			lazy="true">
+
+			<p:column headerText="ID">
+				<h:outputText value="#{stud.id}"></h:outputText>
+			</p:column>
+			<p:column headerText="Student Name">
+				<h:outputText value="#{stud.name}"></h:outputText>
+			</p:column>
+			<p:column headerText="College">
+				<h:outputText value="#{stud.college}"></h:outputText>
+			</p:column>
+			<p:column headerText="Branch">
+				<h:outputText value="#{stud.branch}"></h:outputText>
+			</p:column>
+			<p:column headerText="DateOfBitrh">
+				<h:outputText value="#{stud.dob}">
+					<f:convertDateTime pattern="yyyy-MM-dd" />
+				</h:outputText>
+			</p:column>
+			<p:column headerText="Age">
+				<h:outputText value="#{stud.age}"></h:outputText>
+			</p:column>
+			<p:column headerText="Gender">
+				<h:outputText value="#{stud.gender}"></h:outputText>
+			</p:column>
+			<p:column headerText="Email">
+				<h:outputText value="#{stud.email}"></h:outputText>
+			</p:column>
+			<p:column headerText="Mobile">
+				<h:outputText value="#{stud.mobile}"></h:outputText>
+			</p:column>
+			<p:column headerText="Country">
+				<h:outputText value="#{stud.country.country_name}"></h:outputText>
+			</p:column>
+			<p:column headerText="State">
+				<h:outputText value="#{stud.state.state_name}"></h:outputText>
+			</p:column>
+			<p:column headerText="City">
+				<h:outputText value="#{stud.city.city_name}"></h:outputText>
+			</p:column>
+			<p:column headerText="Pincode">
+				<h:outputText value="#{stud.pincode}"></h:outputText>
+			</p:column>
+
+			<p:column headerText="Edit">
+				<p:commandButton value="Edit" styleClass="editButton"
+					action="#{student2Bean.setSelectedStudent(stud)}"
+					onclick="PF('updateFormDialogStudent').show()"
+					update=":updateStudentForm:upd_dialog_panel_grid" />
+			</p:column>
+
+			<p:column headerText="Delete">
+				<p:commandButton value="Delete" styleClass="deleteButton"
+					oncomplete="PF('studentTable').refresh()"
+					action="#{student2Bean.deleteStudent(stud)}"
+					update=":dataTableForm, :growlForm:messages" process="@this" />
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<h:form id="studentForm">
+		<p:growl id="growl_msg" sticky="true" />
+		<p:messages id="messages" showDetail="true" showSummary="false"
+			autoUpdate="true" />
+
+
+		<p:dialog id="frm_dialog" widgetVar="formDialogStudent"
+			header="Student Form" showEffect="fade" hideEffect="fade"
+			closeOnEscape="true" styleClass="dialogContainer" minHeight="40"
+			height="500px" width="1000" resizable="true" responsive="true">
+
+			<p:panelGrid id="dialog_panel_grid" layout="grid" columns="4"
+				style="width: 100%;">
+
+				<p:outputLabel for="studentName" styleClass="block">Student Name</p:outputLabel>
+				<p:inputText id="studentName"
+					value="#{student2Bean.studentToSave.name}" required="true"
+					requiredMessage="Name is a required field" styleClass="block"
+					placeholder="Enter Name" style="width:200px;">
+					<f:validateLength minimum="3" maximum="20" />
+				</p:inputText>
+
+				<p:outputLabel for="college" styleClass="block">College</p:outputLabel>
+				<p:inputText id="college"
+					value="#{student2Bean.studentToSave.college}" required="true"
+					styleClass="block" placeholder="Enter College/University"
+					style="width:200px;">
+					<f:validateLength minimum="3" maximum="100" />
+				</p:inputText>
+
+
+				<p:outputLabel for="branch" styleClass="block">Branch</p:outputLabel>
+				<p:selectOneMenu id="branch"
+					value="#{student2Bean.studentToSave.branch}" style="width:200px"
+					required="true">
+					<f:selectItem itemLabel="Select Branch" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{student2Bean.allBranches}" var="branch"
+						itemLabel="#{branch}" itemValue="#{branch}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="dob" styleClass="block">Date Of Birth</p:outputLabel>
+				<p:datePicker id="dob" value="#{student2Bean.studentToSave.dob}"
+					monthNavigator="true" yearNavigator="true" showWeek="true"
+					pattern="MM/dd/yyyy" required="true">
+					<f:convertDateTime pattern="MM/dd/yyyy" />
+					<p:ajax event="dateSelect" listener="#{student2Bean.calculateAge}"
+						update="studentAge" />
+				</p:datePicker>
+
+				<p:outputLabel for="studentAge" styleClass="block">Age</p:outputLabel>
+				<p:inputText id="studentAge" styleClass="block"
+					value="#{student2Bean.studentToSave.age}" required="true"
+					readonly="true" />
+
+
+				<p:outputLabel for="gender" styleClass="block">Gender</p:outputLabel>
+				<p:selectOneRadio id="gender"
+					value="#{student2Bean.studentToSave.gender}" layout="lineDirection"
+					required="true">
+					<f:selectItem itemLabel="Male" itemValue="Male" />
+					<f:selectItem itemLabel="Female" itemValue="Female" />
+				</p:selectOneRadio>
+
+				<p:outputLabel for="email" styleClass="block">Email Id</p:outputLabel>
+				<p:inputText id="email" styleClass="block"
+					value="#{student2Bean.studentToSave.email}" required="true"
+					placeholder="Enter Email Id" style="width:200px;">
+				</p:inputText>
+
+				<p:outputLabel for="mobile" styleClass="block">Mobile</p:outputLabel>
+				<p:inputText id="mobile"
+					value="#{student2Bean.studentToSave.mobile}" required="true"
+					requiredMessage="Mobile number is required"
+					placeholder="Enter Mobile Number" style="width:200px;">
+				</p:inputText>
+
+				<p:outputLabel for="country" value="Country" styleClass="block" />
+				<p:selectOneMenu id="country"
+					value="#{student2Bean.selectedCountryId}">
+					<f:selectItem itemLabel="Select Country" itemValue="" />
+					<f:selectItems value="#{student2Bean.countries}" var="country"
+						itemLabel="#{country.country_name}"
+						itemValue="#{country.country_id}" />
+					<p:ajax event="change" listener="#{student2Bean.onCountryChange}"
+						update="state" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="state" value="State" styleClass="block" />
+				<p:selectOneMenu id="state" value="#{student2Bean.selectedStateId}">
+					<f:selectItem itemLabel="Select State" itemValue="" />
+					<f:selectItems value="#{student2Bean.states}" var="state"
+						itemLabel="#{state.state_name}" itemValue="#{state.state_id}" />
+					<p:ajax event="change" listener="#{student2Bean.onStateChange}"
+						update="city" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="city" value="City" styleClass="block" />
+				<p:selectOneMenu id="city" value="#{student2Bean.selectedCityId}">
+					<f:selectItem itemLabel="Select City" itemValue="" />
+					<f:selectItems value="#{student2Bean.cities}" var="city"
+						itemLabel="#{city.city_name}" itemValue="#{city.city_id}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="pincode" styleClass="block">Pincode</p:outputLabel>
+				<p:inputText id="pincode" styleClass="block"
+					value="#{student2Bean.studentToSave.pincode}" required="true"
+					placeholder="Enter Pincode" style="width:200px;">
+					<f:validateLength minimum="6" maximum="6" />
+				</p:inputText>
+			</p:panelGrid>
+
+			<div class="dialogButtons">
+				<p:commandButton id="submit_btn" value="Submit"
+					styleClass="submitButton"
+					actionListener="#{student2Bean.saveStudent()}"
+					update=":dataTableForm, , :growlForm:messages" process="@form"
+					oncomplete="PF('formDialogStudent').hide()" />
+				<p:commandButton id="cancel_btn" value="Cancel"
+					styleClass="cancelButton" onclick="PF('formDialogStudent').hide()" />
+			</div>
+		</p:dialog>
+	</h:form>
+
+
+	<h:form id="updateStudentForm">
+		<p:growl id="growl_msg" sticky="true" />
+		<p:messages id="messagess" showDetail="true" showSummary="false"
+			autoUpdate="true" />
+
+		<p:dialog id="upd_frm_dialog" widgetVar="updateFormDialogStudent"
+			header="Student Form" showEffect="fade" hideEffect="fade"
+			closeOnEscape="true" styleClass="dialogContainer" minHeight="40"
+			height="500px" width="1000" resizable="true" responsive="true">
+
+			<p:panelGrid id="upd_dialog_panel_grid" layout="grid" columns="4"
+				style="width: 100%;">
+
+				<p:outputLabel for="studentName" styleClass="block">Student Name</p:outputLabel>
+				<p:inputText id="studentName"
+					value="#{student2Bean.selectedStudent.name}" required="true"
+					requiredMessage="Name is a required field" styleClass="block"
+					placeholder="Enter Name" style="width:200px;">
+					<f:validateLength minimum="3" maximum="20" />
+				</p:inputText>
+
+				<p:outputLabel for="college" styleClass="block">College</p:outputLabel>
+				<p:inputText id="college"
+					value="#{student2Bean.selectedStudent.college}" required="true"
+					styleClass="block" placeholder="Enter College/University"
+					style="width:200px;">
+					<f:validateLength minimum="3" maximum="100" />
+				</p:inputText>
+
+				<p:outputLabel for="branch" styleClass="block">Branch</p:outputLabel>
+				<p:selectOneMenu id="branch"
+					value="#{student2Bean.selectedStudent.branch}" style="width:200px"
+					required="true">
+					<f:selectItem itemLabel="Select Branch" itemValue=""
+						noSelectionOption="true" />
+					<f:selectItems value="#{student2Bean.allBranches}" var="branch"
+						itemLabel="#{branch}" itemValue="#{branch}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="dob" styleClass="block">Date Of Birth</p:outputLabel>
+				<p:datePicker id="dob" value="#{student2Bean.selectedStudent.dob}"
+					monthNavigator="true" yearNavigator="true" showWeek="true"
+					pattern="MM/dd/yyyy" required="true"
+					onchange="PrimeFaces.ab({source: this, event: 'change', update: 'studentAge', process: '@this'});">
+					<f:convertDateTime pattern="MM/dd/yyyy" />
+
+				</p:datePicker>
+
+				<p:outputLabel for="studentAge" styleClass="block">Age</p:outputLabel>
+				<p:inputText id="studentAge" styleClass="block"
+					value="#{student2Bean.selectedStudent.age}" required="true"
+					readonly="true" />
+
+				<p:outputLabel for="gender" styleClass="block">Gender</p:outputLabel>
+				<p:selectOneRadio id="gender"
+					value="#{student2Bean.selectedStudent.gender}"
+					layout="lineDirection" required="true">
+					<f:selectItem itemLabel="Male" itemValue="Male" />
+					<f:selectItem itemLabel="Female" itemValue="Female" />
+				</p:selectOneRadio>
+
+				<p:outputLabel for="email" styleClass="block">Email Id</p:outputLabel>
+				<p:inputText id="email" styleClass="block"
+					value="#{student2Bean.selectedStudent.email}" required="true"
+					placeholder="Enter Email Id" style="width:200px;">
+				</p:inputText>
+
+				<p:outputLabel for="mobile" styleClass="block">Mobile</p:outputLabel>
+				<p:inputText id="mobile"
+					value="#{student2Bean.selectedStudent.mobile}" required="true"
+					requiredMessage="Mobile number is required"
+					placeholder="Enter Mobile Number" style="width:200px;">
+				</p:inputText>
+
+				<p:outputLabel for="country" value="Country" styleClass="block" />
+				<p:selectOneMenu id="country"
+					value="#{student2Bean.selectedCountryId}" style="width:200px">
+					<f:selectItem itemLabel="Select Country" itemValue="" />
+					<f:selectItems value="#{student2Bean.countries}" var="country"
+						itemLabel="#{country.country_name}"
+						itemValue="#{country.country_id}" />
+					<p:ajax event="change" listener="#{student2Bean.onCountryChange}"
+						update="state, city" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="state" value="State" styleClass="block" />
+				<p:selectOneMenu id="state" value="#{student2Bean.selectedStateId}"
+					style="width:200px">
+					<f:selectItem itemLabel="Select State" itemValue="" />
+					<f:selectItems value="#{student2Bean.states}" var="state"
+						itemLabel="#{state.state_name}" itemValue="#{state.state_id}" />
+					<p:ajax event="change" listener="#{student2Bean.onStateChange}"
+						update="city" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="city" value="City" styleClass="block" />
+				<p:selectOneMenu id="city" value="#{student2Bean.selectedCityId}"
+					style="width:200px">
+					<f:selectItem itemLabel="Select City" itemValue="" />
+					<f:selectItems value="#{student2Bean.cities}" var="city"
+						itemLabel="#{city.city_name}" itemValue="#{city.city_id}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="pincode" styleClass="block">Pincode</p:outputLabel>
+				<p:inputText id="pincode" styleClass="block"
+					value="#{student2Bean.selectedStudent.pincode}" required="true"
+					placeholder="Enter Pincode" style="width:200px;">
+					<f:validateLength minimum="6" maximum="6" />
+				</p:inputText>
+			</p:panelGrid>
+
+			<div class="dialogButtons">
+				<p:commandButton id="submit_btn" value="Submit"
+					styleClass="submitButton"
+					actionListener="#{student2Bean.updateStudent()}"
+					update=":dataTableForm, , :growlForm:messages" process="@form"
+					oncomplete="PF('updateFormDialogStudent').hide()" />
+				<p:commandButton id="cancel_btn" value="Cancel"
+					styleClass="cancelButton"
+					onclick="PF('updateFormDialogStudent').hide()" />
+			</div>
+		</p:dialog>
+	</h:form>
+
+
+</h:body>
+</html>
